@@ -42,7 +42,7 @@
         // 1. Parse the URL parameters from the email link
         const urlParams = new URLSearchParams(window.location.search);
         const customerId = urlParams.get('click') || 'unknown_user';
-        const destKey = urlParams.get('url') || 'glystastudio.co.uk';
+        const destKey = urlParams.get('url') || 'link0';
 
         // 2. Your Google Apps Script Tracking URL
         const googleScriptUrl = "https://script.google.com/macros/s/AKfycbzldvrov23iwlBLIA0SP1xR_ZkypK9g6lTjD-VviAMpyA9dMT67wTjc12abyhRed-2jDg/exec";
@@ -51,13 +51,14 @@
 
         // 3. Your Map of SumUp Payment Links
         const paymentLinks = {
+            "link0": "https://glystastudio.co.uk", // fallback
             "link1": "https://pay.sumup.com/b2c/QSF1G09A", // Framed print 5x7, non-refundable deposit
             "link2": "https://pay.sumup.com/b2c/QJUFXKNL", // Unframed print 5x7, non-refundable deposit
             "link3": "https://pay.sumup.com/b2c/QM5OW07C" // Reserve Original, non-refundable deposit
         };
 
         // Determine which link to send the customer to
-        const finalRedirectUrl = paymentLinks[destKey] || paymentLinks["link1"];
+        const finalRedirectUrl = paymentLinks[destKey] || paymentLinks["link0"];
 
         // 4. Record the click silently (Ping) and then Redirect
         // The 'finally' block ensures they go to SumUp even if the tracking fails
