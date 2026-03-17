@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Payment Redirect</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f7f9;
+            color: #333;
+        }
+        .loader-container { text-align: center; }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="loader-container">
+        <div class="spinner"></div>
+        <p>Redirecting to secure payment...</p>
+    </div>
+
+    <script>
+        // 1. Parse the URL parameters from the email link
+        const urlParams = new URLSearchParams(window.location.search);
+        const customerId = urlParams.get('id') || 'unknown_user';
+        const destKey = urlParams.get('dest') || 'link1';
+
+        // 2. Your Google Apps Script Tracking URL
+        const googleScriptUrl = "https://script.google.com/macros/s/AKfycbzldvrov23iwlBLIA0SP1xR_ZkypK9g6lTjD-VviAMpyA9dMT67wTjc12abyhRed-2jDg/exec";
+";
+        const trackingUrl = `${googleScriptUrl}?id=${encodeURIComponent(customerId)}&dest=${encodeURIComponent(destKey)}`;
+
+        // 3. Your Map of SumUp Payment Links
+        const paymentLinks = {
+            "link1": "https://pay.sumup.com/b2c/QSF1G09A", // Framed print 5x7, non-refundable deposit
+            "link2": "https://pay.sumup.com/b2c/QJUFXKNL", // Unframed print 5x7, non-refundable deposit
+            "link3": "https://pay.sumup.com/b2c/QM5OW07C" // Reserve Original, non-refundable deposit
+        };
+
+        // Determine which link to send the customer to
+        const finalRedirectUrl = paymentLinks[destKey] || paymentLinks["link1"];
+
+        // 4. Record the click silently (Ping) and then Redirect
+        // The 'finally' block ensures they go to SumUp even if the tracking fails
+        fetch(trackingUrl, { mode: 'no-cors' })
+            .finally(() => {
+                window.location.href = finalRedirectUrl;
+            });
+            
+        // Safety timeout: if fetch hangs, redirect anyway after 2 seconds
+        setTimeout(() => {
+            window.location.href = finalRedirectUrl;
+        }, 2000);
+    </script>
+</body>
+</html>
