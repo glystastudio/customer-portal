@@ -41,8 +41,8 @@
     <script>
         // 1. Parse the URL parameters from the email link
         const urlParams = new URLSearchParams(window.location.search);
-        const customerId = urlParams.get('click') || 'unknown_user';
-        const destKey = urlParams.get('url') || 'link0';
+        const customerId = urlParams.get('id') || 'unknown_user';
+        const destKey = urlParams.get('dest') || 'link0';
 
         // 2. Your Google Apps Script Tracking URL
         const googleScriptUrl = "https://script.google.com/macros/s/AKfycbzldvrov23iwlBLIA0SP1xR_ZkypK9g6lTjD-VviAMpyA9dMT67wTjc12abyhRed-2jDg/exec";
